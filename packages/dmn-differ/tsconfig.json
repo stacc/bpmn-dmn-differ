@@ -1,0 +1,3 @@
+{
+  "extends": "@bpmn-dmn-differ/typescript-config/bun.json"
+}

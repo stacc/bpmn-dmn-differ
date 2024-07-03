@@ -1,5 +1,5 @@
 {
-  "name": "dmn-differ",
+  "name": "bpmn-differ",
   "module": "index.ts",
   "type": "module",
   "scripts": {
@@ -12,8 +12,8 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "bpmn-moddle": "^9.0.1",
     "diffpatch": "^0.5.1",
-    "dmn-moddle": "^10.0.0",
     "min-dash": "^4.2.1"
   }
 }
