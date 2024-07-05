@@ -35,6 +35,9 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.4.5
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0
 
   packages/dmn-differ:
     dependencies:

@@ -1,19 +1,19 @@
 {
-  "name": "bpmn-differ",
-  "module": "index.ts",
-  "type": "module",
-  "scripts": {
-    "test": "bun test",
-    "test:watch": "bun test --watch"
-  },
-  "devDependencies": {
-    "@bpmn-dmn-differ/typescript-config": "workspace:*",
-    "@types/bun": "latest",
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "bpmn-moddle": "^9.0.1",
-    "diffpatch": "^0.5.1",
-    "min-dash": "^4.2.1"
-  }
+	"name": "bpmn-differ",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"test": "vitest"
+	},
+	"devDependencies": {
+		"@bpmn-dmn-differ/typescript-config": "workspace:*",
+		"@types/bun": "latest",
+		"typescript": "^5.0.0",
+		"vitest": "^1.6.0"
+	},
+	"dependencies": {
+		"bpmn-moddle": "^9.0.1",
+		"diffpatch": "^0.5.1",
+		"min-dash": "^4.2.1"
+	}
 }

@@ -24,9 +24,17 @@ function isTracked(element: BaseElement) {
 }
 
 export class ChangeHandler {
-	_changed: Record<string, any>;
-	_removed: Record<string, any>;
-	_added: Record<string, any>;
+	_changed: Record<
+		string,
+		BaseElement & {
+			attrs: Record<
+				string,
+				{ oldValue: string | null; newValue: string | null }
+			>;
+		}
+	>;
+	_removed: Record<string, BaseElement>;
+	_added: Record<string, BaseElement>;
 	constructor() {
 		this._changed = {};
 		this._removed = {};
