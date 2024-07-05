@@ -1,6 +1,6 @@
 import { expect, describe, it, assert } from "vitest";
 import DmnModdle from "dmn-moddle";
-import { Differ, diff } from "../../src";
+import { Differ, camundaScheme, diff } from "../../src";
 import { ChangeHandler } from "../../src/change-handler";
 import { readFileSync } from "node:fs";
 
@@ -127,7 +127,7 @@ describe("diffing", () => {
 		});
 	});
 
-	it.skip("should discover change input variables", async () => {
+	it("should discover change input variables", async () => {
 		const results = await testDmnDiff(
 			"test/fixtures/change-input-var/before.dmn",
 			"test/fixtures/change-input-var/after.dmn",
@@ -165,7 +165,7 @@ describe("diffing", () => {
 		assert.containsAllKeys(results._changed, ["Decision_1"]);
 	});
 
-	it.skip("should discover change column types", async () => {
+	it("should discover change column types", async () => {
 		const results = await testDmnDiff(
 			"test/fixtures/change-columns-type/before.dmn",
 			"test/fixtures/change-columns-type/after.dmn",
@@ -190,7 +190,7 @@ describe("diffing", () => {
 		});
 	});
 
-	it.skip("should discover change column types (reversed)", async () => {
+	it("should discover change column types (reversed)", async () => {
 		const results = await testDmnDiff(
 			"test/fixtures/change-columns-type/after.dmn",
 			"test/fixtures/change-columns-type/before.dmn",
@@ -285,7 +285,7 @@ describe("api", () => {
 // Helpers
 async function importDmnDiagram(filePath: string) {
 	const file = readFileSync(filePath, "utf-8");
-	return new DmnModdle().fromXML(file);
+	return new DmnModdle({ camunda: camundaScheme }).fromXML(file);
 }
 
 async function testDmnDiff(beforeFilePath: string, afterFilePath: string) {
