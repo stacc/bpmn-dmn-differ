@@ -12,7 +12,6 @@ describe("diffing", () => {
 		);
 		assert.containsAllKeys(results._added, ["Decision_2"]);
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		expect(results._changed).toEqual({});
 	});
 
@@ -23,7 +22,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"LiteralExpression_11bnf50",
@@ -44,7 +42,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		assert.containsAllKeys(results._removed, ["Decision_2"]);
-		expect(results._layoutChanged).toEqual({});
 		expect(results._changed).toEqual({});
 	});
 
@@ -55,7 +52,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"DecisionTable_0zjc24h",
@@ -72,7 +68,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, ["DecisionTable_0zjc24h"]);
 		expect(results._changed.DecisionTable_0zjc24h.attrs).toEqual({
 			hitPolicy: { oldValue: "UNIQUE", newValue: "FIRST" },
@@ -87,7 +82,6 @@ describe("diffing", () => {
 
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"DecisionTable_0zjc24h",
 			"Decision_1",
@@ -105,7 +99,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"DecisionTable_0zjc24h",
@@ -124,7 +117,6 @@ describe("diffing", () => {
 
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"DecisionTable_0zjc24h",
@@ -142,7 +134,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, ["Decision_1", "Input_1"]);
 		expect(results._changed.Input_1.attrs).toEqual({
 			inputVariable: { oldValue: undefined, newValue: "inputVar" },
@@ -161,7 +152,6 @@ describe("diffing", () => {
 			"UnaryTests_1v6m01o",
 		]);
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, ["Decision_1"]);
 	});
 
@@ -172,7 +162,6 @@ describe("diffing", () => {
 		);
 		assert.containsAllKeys(results._added, ["DecisionRule_20pnqml"]);
 		assert.containsAllKeys(results._removed, ["DecisionRule_10pnqml"]);
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, ["Decision_1"]);
 	});
 
@@ -183,7 +172,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"Input_1",
@@ -209,7 +197,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"Input_1",
@@ -235,7 +222,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"Input_1",
@@ -251,7 +237,6 @@ describe("diffing", () => {
 		);
 		expect(results._added).toEqual({});
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, [
 			"Decision_1",
 			"DecisionRule_10pnqml",
@@ -275,7 +260,6 @@ describe("api", () => {
 			"UnaryTests_1v6m01o",
 		]);
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, ["Decision_1"]);
 	});
 
@@ -294,7 +278,6 @@ describe("api", () => {
 			"UnaryTests_1v6m01o",
 		]);
 		expect(results._removed).toEqual({});
-		expect(results._layoutChanged).toEqual({});
 		assert.containsAllKeys(results._changed, ["Decision_1"]);
 	});
 });

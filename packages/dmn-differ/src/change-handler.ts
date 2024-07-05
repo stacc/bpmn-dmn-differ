@@ -1,15 +1,7 @@
 import type { BaseElement, DMNModdle } from "./types";
 
-function is(element: BaseElement, type: string) {
-	return element?.$type === type;
-}
-
 function isAny(element: BaseElement, types: string[]) {
-	return types.some((type) => is(element, type));
-}
-
-function isDi(element: BaseElement) {
-	return isAny(element, ["dmndi:DMNEdge", "dmndi:DMNShape"]);
+	return types.some((type) => element?.$type === type);
 }
 
 function isTracked(element: BaseElement) {
@@ -32,12 +24,10 @@ function isTracked(element: BaseElement) {
 }
 
 export class ChangeHandler {
-	_layoutChanged: Record<string, any>;
 	_changed: Record<string, any>;
 	_removed: Record<string, any>;
 	_added: Record<string, any>;
 	constructor() {
-		this._layoutChanged = {};
 		this._changed = {};
 		this._removed = {};
 		this._added = {};
@@ -60,8 +50,6 @@ export class ChangeHandler {
 				null,
 				element,
 			);
-		} else if (isDi(model) && property === "waypoint") {
-			this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
 		}
 	};
 
@@ -72,9 +60,7 @@ export class ChangeHandler {
 		oldValue?: string,
 	) => {
 		let tracked;
-		if (isDi(model)) {
-			this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
-		} else if ((tracked = isTracked(model))) {
+		if ((tracked = isTracked(model))) {
 			let changed = this._changed[tracked.element.id];
 
 			if (!changed) {
@@ -108,8 +94,6 @@ export class ChangeHandler {
 				element,
 				null,
 			);
-		} else if (isDi(model) && property === "waypoint") {
-			this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
 		}
 	};
 }
