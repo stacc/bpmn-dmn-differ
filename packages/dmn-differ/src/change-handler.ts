@@ -38,40 +38,41 @@ export class ChangeHandler {
 		element: BaseElement,
 		idx: string,
 	) => {
-		let tracked;
-		if ((tracked = isTracked(element))) {
+		let tracked = isTracked(element);
+		if (tracked) {
 			if (!this._removed[tracked.element.id]) {
 				this._removed[tracked.element.id] = element;
 			}
-		} else if ((tracked = isTracked(model))) {
-			this.changed(
-				tracked.element,
-				`${tracked.property + property}[${idx}]`,
-				null,
-				element,
-			);
+		} else {
+			tracked = isTracked(model);
+			if (tracked) {
+				this.changed(
+					tracked.element,
+					`${tracked.property + property}[${idx}]`,
+					null,
+					element,
+				);
+			}
 		}
 	};
 
 	changed = (
-		model: DMNModdle,
+		model: DMNModdle | BaseElement,
 		property: string,
 		newValue?: string,
 		oldValue?: string,
 	) => {
-		let tracked;
-		if ((tracked = isTracked(model))) {
+		const tracked = isTracked(model);
+		if (tracked) {
 			let changed = this._changed[tracked.element.id];
-
 			if (!changed) {
 				changed = this._changed[tracked.element.id] = {
 					model: model,
 					attrs: {},
 				};
 			}
-
 			if (oldValue !== undefined || newValue !== undefined) {
-				changed.attrs[property] = { oldValue: oldValue, newValue: newValue };
+				changed.attrs[property] = { oldValue, newValue };
 			}
 		}
 	};
@@ -81,19 +82,21 @@ export class ChangeHandler {
 		element: BaseElement,
 		idx: string,
 	) => {
-		let tracked;
-
-		if ((tracked = isTracked(element))) {
+		let tracked = isTracked(element);
+		if (tracked) {
 			if (!this._added[tracked.element.id]) {
 				this._added[tracked.element.id] = element;
 			}
-		} else if ((tracked = isTracked(model))) {
-			this.changed(
-				tracked.element,
-				`${tracked.property + property}[${idx}]`,
-				element,
-				null,
-			);
+		} else {
+			tracked = isTracked(model);
+			if (tracked) {
+				this.changed(
+					tracked.element,
+					`${tracked.property + property}[${idx}]`,
+					element,
+					null,
+				);
+			}
 		}
 	};
 }
