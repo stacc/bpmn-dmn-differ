@@ -201,7 +201,6 @@ describe("diffing", () => {
 			assert.containsAllKeys(results._added, [
 				"ManualTask_1",
 				"ExclusiveGateway_1",
-				"undefined",
 			]);
 			assert.containsAllKeys(results._removed, [
 				"_6-674",
@@ -212,10 +211,9 @@ describe("diffing", () => {
 				"_6-125",
 				"_6-178",
 				"_6-642",
-				"undefined",
 			]);
 			assert.containsAllKeys(results._layoutChanged, ["_6-61"]);
-			assert.containsAllKeys(results._changed, ["_6-127"]);
+			assert.containsAllKeys(results._changed, ["_6-127", "_6-220"]);
 		});
 
 		it.skip("data-objects", async () => {
