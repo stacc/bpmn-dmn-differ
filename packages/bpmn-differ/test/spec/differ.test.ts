@@ -2,19 +2,20 @@ import BpmnModdle from "bpmn-moddle";
 import { expect, describe, it, assert } from "vitest";
 import { readFileSync } from "node:fs";
 import { ChangeHandler } from "../../src/change-handler";
-import { diff, Differ } from "../../src";
+import { diff } from "../../src";
 
 describe("diffing", () => {
 	describe("diff", () => {
-		it.skip("should discover add", async () => {
+		it("should discover add", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/add/before.bpmn",
 				"test/fixtures/add/after.bpmn",
 			);
-			assert.containsAllKeys(results._added, ["EndEvent_1", "SequenceFlow_2"]);
-			expect(results._removed).toEqual({});
-			expect(results._layoutChanged).toEqual({});
-			expect(results._changed).toEqual({});
+			console.log(results);
+			assert.containsAllKeys(results.added, ["EndEvent_1", "SequenceFlow_2"]);
+			expect(results.removed).toEqual({});
+			expect(results.changed).toEqual({});
+			expect(results.layoutChanged).toEqual({});
 		});
 
 		it.skip("should discover remove", async () => {
@@ -22,10 +23,10 @@ describe("diffing", () => {
 				"test/fixtures/remove/before.bpmn",
 				"test/fixtures/remove/after.bpmn",
 			);
-			expect(results._added).toEqual({});
-			assert.containsAllKeys(results._removed, ["Task_1", "SequenceFlow_1"]);
-			expect(results._layoutChanged).toEqual({});
-			expect(results._changed).toEqual({});
+			expect(results.added).toEqual({});
+			assert.containsAllKeys(results.removed, ["Task_1", "SequenceFlow_1"]);
+			expect(results.layoutChanged).toEqual({});
+			expect(results.changed).toEqual({});
 		});
 
 		it.skip("should discover change", async () => {
@@ -33,11 +34,11 @@ describe("diffing", () => {
 				"test/fixtures/change/before.bpmn",
 				"test/fixtures/change/after.bpmn",
 			);
-			expect(results._added).toEqual({});
-			expect(results._removed).toEqual({});
-			expect(results._layoutChanged).toEqual({});
-			assert.containsAllKeys(results._changed, ["Task_1"]);
-			expect(results._changed.Task_1.attrs).toEqual({
+			expect(results.added).toEqual({});
+			expect(results.removed).toEqual({});
+			expect(results.layoutChanged).toEqual({});
+			assert.containsAllKeys(results.changed, ["Task_1"]);
+			expect(results.changed.Task_1.attrs).toEqual({
 				name: { oldValue: undefined, newValue: "TASK" },
 			});
 		});
@@ -47,13 +48,13 @@ describe("diffing", () => {
 				"test/fixtures/layout-change/before.bpmn",
 				"test/fixtures/layout-change/after.bpmn",
 			);
-			expect(results._added).toEqual({});
-			expect(results._removed).toEqual({});
-			assert.containsAllKeys(results._layoutChanged, [
+			expect(results.added).toEqual({});
+			expect(results.removed).toEqual({});
+			assert.containsAllKeys(results.layoutChanged, [
 				"Task_1",
 				"SequenceFlow_1",
 			]);
-			expect(results._changed).toEqual({});
+			expect(results.changed).toEqual({});
 		});
 
 		it("should discover timer-change", async () => {
@@ -61,14 +62,13 @@ describe("diffing", () => {
 				"test/fixtures/timer-change/before.bpmn",
 				"test/fixtures/timer-change/after.bpmn",
 			);
-			expect(results._added).toEqual({});
-			expect(results._removed).toEqual({});
-			expect(results._layoutChanged).toEqual({});
-			assert.containsAllKeys(results._changed, [
-				"TimerEventDefinition_0fgktse",
-			]);
+			expect(results.added).toEqual({});
+			expect(results.removed).toEqual({});
+			expect(results.layoutChanged).toEqual({});
+			assert.containsAllKeys(results.changed, ["TimerEventDefinition_0fgktse"]);
 		});
 	});
+
 	describe("api", () => {
 		it("should diff with default handler", async () => {
 			const before = await importBPMNDiagram(
@@ -77,14 +77,14 @@ describe("diffing", () => {
 			const after = await importBPMNDiagram(
 				"test/fixtures/layout-change/after.bpmn",
 			);
-			const results = new Differ().diff(before, after);
-			expect(results._added).toEqual({});
-			expect(results._removed).toEqual({});
-			assert.containsAllKeys(results._layoutChanged, [
+			const results = diff(before, after);
+			expect(results.added).toEqual({});
+			expect(results.removed).toEqual({});
+			assert.containsAllKeys(results.layoutChanged, [
 				"Task_1",
 				"SequenceFlow_1",
 			]);
-			expect(results._changed).toEqual({});
+			expect(results.changed).toEqual({});
 		});
 
 		it("should diff via static diff", async () => {
@@ -95,13 +95,13 @@ describe("diffing", () => {
 				"test/fixtures/layout-change/after.bpmn",
 			);
 			const results = diff(before, after);
-			expect(results._added).toEqual({});
-			expect(results._removed).toEqual({});
-			assert.containsAllKeys(results._layoutChanged, [
+			expect(results.added).toEqual({});
+			expect(results.removed).toEqual({});
+			assert.containsAllKeys(results.layoutChanged, [
 				"Task_1",
 				"SequenceFlow_1",
 			]);
-			expect(results._changed).toEqual({});
+			expect(results.changed).toEqual({});
 		});
 	});
 
@@ -111,17 +111,17 @@ describe("diffing", () => {
 				"test/fixtures/collaboration/before.bpmn",
 				"test/fixtures/collaboration/after.bpmn",
 			);
-			assert.containsAllKeys(results._added, ["Participant_2"]);
-			assert.containsAllKeys(results._removed, [
+			assert.containsAllKeys(results.added, ["Participant_2"]);
+			assert.containsAllKeys(results.removed, [
 				"Participant_1",
 				"Lane_1",
 				"Task_1",
 			]);
-			assert.containsAllKeys(results._layoutChanged, [
+			assert.containsAllKeys(results.layoutChanged, [
 				"_Participant_2",
 				"Lane_2",
 			]);
-			assert.containsAllKeys(results._changed, ["Lane_2"]);
+			assert.containsAllKeys(results.changed, ["Lane_2"]);
 		});
 
 		it("lanes create", async () => {
@@ -129,12 +129,12 @@ describe("diffing", () => {
 				"test/fixtures/lanes/create-laneset-before.bpmn",
 				"test/fixtures/lanes/create-laneset-after.bpmn",
 			);
-			expect(results._added).empty;
-			expect(results._removed).empty;
-			expect(results._layoutChanged).empty;
-			assert.containsAllKeys(results._changed, ["Participant_03hz6qm"]);
+			expect(results.added).empty;
+			expect(results.removed).empty;
+			expect(results.layoutChanged).empty;
+			assert.containsAllKeys(results.changed, ["Participant_03hz6qm"]);
 
-			const changed = results._changed.Participant_03hz6qm;
+			const changed = results.changed.Participant_03hz6qm;
 
 			assert.containsAllKeys(changed.attrs, ["processRef.laneSets[0]"]);
 
@@ -149,10 +149,10 @@ describe("diffing", () => {
 				"test/fixtures/lanes/create-laneset-after.bpmn",
 				"test/fixtures/lanes/create-laneset-before.bpmn",
 			);
-			expect(results._added).empty;
-			expect(results._removed).empty;
-			expect(results._layoutChanged).empty;
-			assert.containsAllKeys(results._changed, ["Participant_03hz6qm"]);
+			expect(results.added).empty;
+			expect(results.removed).empty;
+			expect(results.layoutChanged).empty;
+			assert.containsAllKeys(results.changed, ["Participant_03hz6qm"]);
 		});
 
 		it("collaboration message flow", async () => {
@@ -161,14 +161,14 @@ describe("diffing", () => {
 				"test/fixtures/collaboration/message-flow-after.bpmn",
 			);
 
-			expect(results._added).empty;
-			assert.containsAllKeys(results._removed, [
+			expect(results.added).empty;
+			assert.containsAllKeys(results.removed, [
 				"Participant_1w6hx42",
 				"MessageFlow_1ofxm38",
 			]);
 
-			expect(results._layoutChanged).empty;
-			expect(results._changed).empty;
+			expect(results.layoutChanged).empty;
+			expect(results.changed).empty;
 		});
 
 		it.skip("extension elements", async () => {
@@ -176,10 +176,10 @@ describe("diffing", () => {
 				"test/fixtures/extension-elements/before.bpmn",
 				"test/fixtures/extension-elements/after.bpmn",
 			);
-			expect(results._added).empty;
-			expect(results._removed).empty;
-			expect(results._layoutChanged).empty;
-			assert.containsAllKeys(results._changed, ["usertask"]);
+			expect(results.added).empty;
+			expect(results.removed).empty;
+			expect(results.layoutChanged).empty;
+			assert.containsAllKeys(results.changed, ["usertask"]);
 		});
 
 		it("pizza collaboration StartEvent move", async () => {
@@ -187,10 +187,10 @@ describe("diffing", () => {
 				"test/fixtures/pizza-collaboration/start-event-old.bpmn",
 				"test/fixtures/pizza-collaboration/start-event-new.bpmn",
 			);
-			expect(results._added).toEqual({});
-			expect(results._removed).toEqual({});
-			assert.containsAllKeys(results._layoutChanged, ["_6-61"]);
-			expect(results._changed).toEqual({});
+			expect(results.added).toEqual({});
+			expect(results.removed).toEqual({});
+			assert.containsAllKeys(results.layoutChanged, ["_6-61"]);
+			expect(results.changed).toEqual({});
 		});
 
 		it.skip("pizza collaboration", async () => {
@@ -198,11 +198,11 @@ describe("diffing", () => {
 				"test/fixtures/pizza-collaboration/old.bpmn",
 				"test/fixtures/pizza-collaboration/new.bpmn",
 			);
-			assert.containsAllKeys(results._added, [
+			assert.containsAllKeys(results.added, [
 				"ManualTask_1",
 				"ExclusiveGateway_1",
 			]);
-			assert.containsAllKeys(results._removed, [
+			assert.containsAllKeys(results.removed, [
 				"_6-674",
 				"_6-691",
 				"_6-746",
@@ -212,8 +212,8 @@ describe("diffing", () => {
 				"_6-178",
 				"_6-642",
 			]);
-			assert.containsAllKeys(results._layoutChanged, ["_6-61"]);
-			assert.containsAllKeys(results._changed, ["_6-127", "_6-220"]);
+			assert.containsAllKeys(results.layoutChanged, ["_6-61"]);
+			assert.containsAllKeys(results.changed, ["_6-127", "_6-220"]);
 		});
 
 		it.skip("data-objects", async () => {
@@ -221,22 +221,22 @@ describe("diffing", () => {
 				"test/fixtures/data-objects/before.bpmn",
 				"test/fixtures/data-objects/after.bpmn",
 			);
-			assert.containsAllKeys(results._added, [
+			assert.containsAllKeys(results.added, [
 				"DataObjectReference_E",
 				"DataOutputAssociation_2",
 				"DataOutputAssociation_3",
 				"DataStoreReference_D",
 			]);
-			assert.containsAllKeys(results._removed, [
+			assert.containsAllKeys(results.removed, [
 				"DataInputAssociation_4",
 				"DataOutputAssociation_5",
 				"DataStoreReference_C",
 			]);
-			assert.containsAllKeys(results._layoutChanged, [
+			assert.containsAllKeys(results.layoutChanged, [
 				// waypoints changed
 				"DataInputAssociation_1",
 			]);
-			assert.containsAllKeys(results._changed, ["Process_1"]);
+			assert.containsAllKeys(results.changed, ["Process_1"]);
 		});
 
 		it.skip("event definition", async () => {
@@ -244,13 +244,13 @@ describe("diffing", () => {
 				"test/fixtures/event-definition/before.bpmn",
 				"test/fixtures/event-definition/after.bpmn",
 			);
-			expect(results._added).empty;
-			expect(results._removed).empty;
-			expect(results._layoutChanged).empty;
-			assert.containsAllKeys(results._changed, [
+			expect(results.added).empty;
+			expect(results.removed).empty;
+			expect(results.layoutChanged).empty;
+			assert.containsAllKeys(results.changed, [
 				"IntermediateThrowEvent_0mn39ym",
 			]);
-			const changed = results._changed.IntermediateThrowEvent_0mn39ym;
+			const changed = results.changed.IntermediateThrowEvent_0mn39ym;
 			assert.containsAllKeys(changed.attrs, ["eventDefinitions[0]"]);
 		});
 
@@ -259,17 +259,17 @@ describe("diffing", () => {
 				"test/fixtures/sub-processes/before.bpmn",
 				"test/fixtures/sub-processes/after.bpmn",
 			);
-			assert.containsAllKeys(results._added, ["Task_F", "SubProcess_4"]);
-			assert.containsAllKeys(results._removed, [
+			assert.containsAllKeys(results.added, ["Task_F", "SubProcess_4"]);
+			assert.containsAllKeys(results.removed, [
 				"Task_A",
 				"Task_B",
 				"SubProcess_3",
 			]);
-			assert.containsAllKeys(results._layoutChanged, [
+			assert.containsAllKeys(results.layoutChanged, [
 				// sub-process collapsed state changed
 				"SubProcess_5",
 			]);
-			expect(results._changed).empty;
+			expect(results.changed).empty;
 		});
 
 		it("signavio-collapsed", async () => {
@@ -277,13 +277,13 @@ describe("diffing", () => {
 				"test/fixtures/signavio-collapsed/before.collapsed.bpmn",
 				"test/fixtures/signavio-collapsed/after.expanded.bpmn",
 			);
-			expect(results._added).empty;
-			expect(results._removed).empty;
-			assert.containsAllKeys(results._layoutChanged, [
+			expect(results.added).empty;
+			expect(results.removed).empty;
+			assert.containsAllKeys(results.layoutChanged, [
 				// sub-process collapsed state changed
 				"SubProcess_1",
 			]);
-			expect(results._changed).empty;
+			expect(results.changed).empty;
 		});
 
 		it("different collaborations", async () => {
@@ -291,16 +291,16 @@ describe("diffing", () => {
 				"test/fixtures/different-collaboration/before.bpmn",
 				"test/fixtures/different-collaboration/after.bpmn",
 			);
-			assert.containsAllKeys(results._added, [
+			assert.containsAllKeys(results.added, [
 				"Collaboration_108r8n7",
 				"Participant_1sdnyht",
 			]);
-			assert.containsAllKeys(results._removed, [
+			assert.containsAllKeys(results.removed, [
 				"Collaboration_1cidyxu",
 				"Participant_0px403d",
 			]);
-			expect(results._layoutChanged).empty;
-			expect(results._changed).empty;
+			expect(results.layoutChanged).empty;
+			expect(results.changed).empty;
 		});
 	});
 });
@@ -315,5 +315,5 @@ async function testBPMNDiff(beforeFilePath: string, afterFilePath: string) {
 	const before = await importBPMNDiagram(beforeFilePath);
 	const after = await importBPMNDiagram(afterFilePath);
 	const handler = new ChangeHandler();
-	return new Differ().diff(before, after, handler);
+	return diff(before, after, handler);
 }

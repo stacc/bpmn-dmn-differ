@@ -1,6 +1,5 @@
 {
 	"name": "dmn-differ",
-	"module": "index.ts",
 	"type": "module",
 	"scripts": {
 		"test": "vitest"
@@ -8,7 +7,7 @@
 	"devDependencies": {
 		"@bpmn-dmn-differ/typescript-config": "workspace:*",
 		"@types/bun": "latest",
-		"typescript": "^5.0.0",
+		"typescript": "^5.4.5",
 		"vitest": "^1.6.0"
 	},
 	"dependencies": {

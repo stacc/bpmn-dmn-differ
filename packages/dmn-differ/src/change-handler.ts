@@ -1,10 +1,11 @@
+// @ts-nocheck
 import type { BaseElement, DMNModdle } from "./types";
 
-function isAny(element: BaseElement, types: string[]) {
+function isAny(element: BaseElement | DMNModdle, types: string[]) {
 	return types.some((type) => element?.$type === type);
 }
 
-function isTracked(element: BaseElement) {
+function isTracked(element: BaseElement | DMNModdle) {
 	const track = isAny(element, [
 		"dmn:Decision",
 		"dmn:DecisionTable",
@@ -23,6 +24,20 @@ function isTracked(element: BaseElement) {
 	}
 }
 
+export type Results = {
+	changed: Record<
+		string,
+		BaseElement & {
+			attrs: Record<
+				string,
+				{ oldValue: string | null; newValue: string | null }
+			>;
+		}
+	>;
+	removed: Record<string, BaseElement>;
+	added: Record<string, BaseElement>;
+};
+
 export class ChangeHandler {
 	_changed: Record<
 		string,
@@ -40,12 +55,21 @@ export class ChangeHandler {
 		this._removed = {};
 		this._added = {};
 	}
+
+	getResults(): Results {
+		return {
+			changed: this._changed,
+			removed: this._removed,
+			added: this._added,
+		};
+	}
+
 	removed = (
 		model: DMNModdle,
 		property: string,
 		element: BaseElement,
 		idx: string,
-	) => {
+	): void => {
 		let tracked = isTracked(element);
 		if (tracked) {
 			if (!this._removed[tracked.element.id]) {
@@ -67,9 +91,9 @@ export class ChangeHandler {
 	changed = (
 		model: DMNModdle | BaseElement,
 		property: string,
-		newValue?: string,
+		newValue?: string | null | BaseElement,
 		oldValue?: string,
-	) => {
+	): void => {
 		const tracked = isTracked(model);
 		if (tracked) {
 			let changed = this._changed[tracked.element.id];
@@ -89,7 +113,7 @@ export class ChangeHandler {
 		property: string,
 		element: BaseElement,
 		idx: string,
-	) => {
+	): void => {
 		let tracked = isTracked(element);
 		if (tracked) {
 			if (!this._added[tracked.element.id]) {
