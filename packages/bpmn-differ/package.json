@@ -1,5 +1,5 @@
 {
-	"name": "bpmn-differ",
+	"name": "@stacc/bpmn-differ",
 	"module": "index.ts",
 	"type": "module",
 	"scripts": {
@@ -8,6 +8,7 @@
 	"devDependencies": {
 		"@bpmn-dmn-differ/typescript-config": "workspace:*",
 		"@types/bun": "latest",
+		"diagram-js": "^14.8.0",
 		"typescript": "^5.0.0",
 		"vitest": "^1.6.0"
 	},

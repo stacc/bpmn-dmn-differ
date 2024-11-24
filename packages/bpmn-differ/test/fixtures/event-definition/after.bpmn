@@ -9,7 +9,7 @@
   </process>
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
     <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Process_0dtggna">
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_0gseev7_di" bpmnElement="IntermediateThrowEvent_0mn39ym">
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1t5g49i_di" bpmnElement="IntermediateThrowEvent_0mn39ym">
         <omgdc:Bounds x="210" y="213" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

@@ -1,18 +1,14 @@
-function is(element, type: string) {
-	return element?.$type === type;
-}
+import type { BaseElement, Properties } from "./types";
+import { is, isAny } from "./utils";
 
-function isAny(element, types: Array<string>) {
-	return types.some((type) => is(element, type));
-}
-
-function isDi(element) {
+// Helper functions remain the same
+function isDi(element: BaseElement) {
 	return isAny(element, ["bpmndi:BPMNEdge", "bpmndi:BPMNShape"]);
 }
 
-function getTrackedProcessVisual(processElement) {
+function getTrackedProcessVisual(processElement: BaseElement) {
 	const definitions = processElement.$parent;
-
+	if (!definitions) return;
 	const collaboration = definitions.rootElements.find((el) =>
 		is(el, "bpmn:Collaboration"),
 	);
@@ -24,9 +20,9 @@ function getTrackedProcessVisual(processElement) {
 			property: "",
 		};
 	}
-
+	if (!collaboration.participants) return;
 	const participant = collaboration.participants.find(
-		(el) => el.processRef === processElement,
+		(el) => el.processRef === (processElement as unknown as string),
 	);
 
 	return (
@@ -37,7 +33,7 @@ function getTrackedProcessVisual(processElement) {
 	);
 }
 
-function isTracked(element) {
+function isTracked(element: BaseElement) {
 	// a bpmn:FlowElement without visual representation
 	if (is(element, "bpmn:DataObject")) {
 		return false;
@@ -58,7 +54,6 @@ function isTracked(element) {
 		"bpmn:Participant",
 		"bpmn:Lane",
 		"bpmn:DataAssociation",
-		"bpmn:TimerEventDefinition",
 	]);
 
 	if (track) {
@@ -69,20 +64,60 @@ function isTracked(element) {
 	}
 }
 
+export type Results = {
+	changed: Record<
+		string,
+		{
+			model: BaseElement;
+			attrs: Record<
+				string,
+				{
+					oldValue?: string | null | BaseElement;
+					newValue?: string | null | BaseElement;
+				}
+			>;
+		}
+	>;
+	removed: Record<string, BaseElement>;
+	added: Record<string, BaseElement>;
+	layoutChanged: Record<string, BaseElement>;
+};
+
 export class ChangeHandler {
-	_layoutChanged: Record<string, any>;
-	_changed: Record<string, any>;
-	_removed: Record<string, any>;
-	_added: Record<string, any>;
+	_layoutChanged: Record<string, BaseElement>;
+	_changed: Record<
+		string,
+		{
+			model: BaseElement;
+			attrs: Record<
+				string,
+				{
+					oldValue?: string | null | BaseElement;
+					newValue?: string | null | BaseElement;
+				}
+			>;
+		}
+	>;
+	_removed: Record<string, BaseElement>;
+	_added: Record<string, BaseElement>;
 	constructor() {
 		this._layoutChanged = {};
 		this._changed = {};
 		this._removed = {};
 		this._added = {};
 	}
-	removed = (model, property: string, element, idx: string) => {
-		let tracked = isTracked(element);
 
+	getResults(): Results {
+		return {
+			changed: this._changed,
+			removed: this._removed,
+			added: this._added,
+			layoutChanged: this._layoutChanged,
+		};
+	}
+
+	removed(model: any, property: Properties, element: BaseElement, idx: number) {
+		let tracked = isTracked(element);
 		if (tracked) {
 			if (!this._removed[tracked.element.id]) {
 				this._removed[tracked.element.id] = element;
@@ -92,41 +127,43 @@ export class ChangeHandler {
 			if (tracked) {
 				this.changed(
 					tracked.element,
-					`${tracked.property + property}[${idx}]`,
+					`${tracked.property + property}[${idx}]` as Properties,
 					null,
 					element,
 				);
+			} else if (isDi(model) && property === "waypoint") {
+				this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
 			}
 		}
-		if (isDi(model) && property === "waypoint") {
-			this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
-		}
-	};
-	changed = (
-		model,
-		property: string,
-		newValue?: string | null,
-		oldValue?: string | null,
-	) => {
+	}
+
+	changed(
+		model: any,
+		property: Properties,
+		newValue?: string | null | BaseElement,
+		oldValue?: string | null | BaseElement,
+	) {
+		const tracked = isTracked(model);
+
 		if (isDi(model)) {
 			this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
-		} else {
-			const tracked = isTracked(model);
-			if (tracked) {
-				let changed = this._changed[tracked.element.id];
-				if (!changed) {
-					changed = this._changed[tracked.element.id] = {
-						model: model,
-						attrs: {},
-					};
-				}
-				if (oldValue !== undefined || newValue !== undefined) {
-					changed.attrs[property] = { oldValue, newValue };
-				}
+		} else if (tracked) {
+			let changed = this._changed[tracked.element.id];
+
+			if (!changed) {
+				changed = this._changed[tracked.element.id] = {
+					model,
+					attrs: {},
+				};
+			}
+
+			if (oldValue || newValue) {
+				changed.attrs[property] = { oldValue, newValue };
 			}
 		}
-	};
-	added = (model, property: string, element, idx: string) => {
+	}
+
+	added(model: any, property: Properties, element: BaseElement, idx: number) {
 		let tracked = isTracked(element);
 		if (tracked) {
 			if (!this._added[tracked.element.id]) {
@@ -137,17 +174,13 @@ export class ChangeHandler {
 			if (tracked) {
 				this.changed(
 					tracked.element,
-					`${tracked.property + property}[${idx}]`,
+					`${tracked.property + property}[${idx}]` as Properties,
 					element,
 					null,
 				);
+			} else if (isDi(model) && property === "waypoint") {
+				this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
 			}
 		}
-		if (isDi(model) && property === "waypoint") {
-			this._layoutChanged[model.bpmnElement.id] = model.bpmnElement;
-		}
-	};
-	moved = (model, _property: string, _oldIndex: number, _newIndex: number) => {
-		// noop
-	};
+	}
 }

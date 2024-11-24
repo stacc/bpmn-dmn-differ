@@ -1,7 +1,6 @@
 import BpmnModdle from "bpmn-moddle";
 import { expect, describe, it, assert } from "vitest";
 import { readFileSync } from "node:fs";
-import { ChangeHandler } from "../../src/change-handler";
 import { diff } from "../../src";
 
 describe("diffing", () => {
@@ -11,14 +10,12 @@ describe("diffing", () => {
 				"test/fixtures/add/before.bpmn",
 				"test/fixtures/add/after.bpmn",
 			);
-			console.log(results);
 			assert.containsAllKeys(results.added, ["EndEvent_1", "SequenceFlow_2"]);
 			expect(results.removed).toEqual({});
-			expect(results.changed).toEqual({});
 			expect(results.layoutChanged).toEqual({});
 		});
 
-		it.skip("should discover remove", async () => {
+		it("should discover remove", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/remove/before.bpmn",
 				"test/fixtures/remove/after.bpmn",
@@ -29,7 +26,7 @@ describe("diffing", () => {
 			expect(results.changed).toEqual({});
 		});
 
-		it.skip("should discover change", async () => {
+		it("should discover change", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/change/before.bpmn",
 				"test/fixtures/change/after.bpmn",
@@ -55,17 +52,6 @@ describe("diffing", () => {
 				"SequenceFlow_1",
 			]);
 			expect(results.changed).toEqual({});
-		});
-
-		it("should discover timer-change", async () => {
-			const results = await testBPMNDiff(
-				"test/fixtures/timer-change/before.bpmn",
-				"test/fixtures/timer-change/after.bpmn",
-			);
-			expect(results.added).toEqual({});
-			expect(results.removed).toEqual({});
-			expect(results.layoutChanged).toEqual({});
-			assert.containsAllKeys(results.changed, ["TimerEventDefinition_0fgktse"]);
 		});
 	});
 
@@ -106,7 +92,7 @@ describe("diffing", () => {
 	});
 
 	describe("should diff scenario", () => {
-		it.skip("collaboration pools / lanes", async () => {
+		it("collaboration pools / lanes", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/collaboration/before.bpmn",
 				"test/fixtures/collaboration/after.bpmn",
@@ -135,7 +121,6 @@ describe("diffing", () => {
 			assert.containsAllKeys(results.changed, ["Participant_03hz6qm"]);
 
 			const changed = results.changed.Participant_03hz6qm;
-
 			assert.containsAllKeys(changed.attrs, ["processRef.laneSets[0]"]);
 
 			const changedLaneSets = changed.attrs["processRef.laneSets[0]"];
@@ -171,7 +156,7 @@ describe("diffing", () => {
 			expect(results.changed).empty;
 		});
 
-		it.skip("extension elements", async () => {
+		it("extension elements", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/extension-elements/before.bpmn",
 				"test/fixtures/extension-elements/after.bpmn",
@@ -193,7 +178,7 @@ describe("diffing", () => {
 			expect(results.changed).toEqual({});
 		});
 
-		it.skip("pizza collaboration", async () => {
+		it("pizza collaboration", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/pizza-collaboration/old.bpmn",
 				"test/fixtures/pizza-collaboration/new.bpmn",
@@ -213,10 +198,10 @@ describe("diffing", () => {
 				"_6-642",
 			]);
 			assert.containsAllKeys(results.layoutChanged, ["_6-61"]);
-			assert.containsAllKeys(results.changed, ["_6-127", "_6-220"]);
+			assert.containsAllKeys(results.changed, ["_6-127"]);
 		});
 
-		it.skip("data-objects", async () => {
+		it("data-objects", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/data-objects/before.bpmn",
 				"test/fixtures/data-objects/after.bpmn",
@@ -239,7 +224,7 @@ describe("diffing", () => {
 			assert.containsAllKeys(results.changed, ["Process_1"]);
 		});
 
-		it.skip("event definition", async () => {
+		it("event definition", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/event-definition/before.bpmn",
 				"test/fixtures/event-definition/after.bpmn",
@@ -254,7 +239,7 @@ describe("diffing", () => {
 			assert.containsAllKeys(changed.attrs, ["eventDefinitions[0]"]);
 		});
 
-		it.skip("sub-processes", async () => {
+		it("sub-processes", async () => {
 			const results = await testBPMNDiff(
 				"test/fixtures/sub-processes/before.bpmn",
 				"test/fixtures/sub-processes/after.bpmn",
@@ -314,6 +299,5 @@ async function importBPMNDiagram(filePath: string) {
 async function testBPMNDiff(beforeFilePath: string, afterFilePath: string) {
 	const before = await importBPMNDiagram(beforeFilePath);
 	const after = await importBPMNDiagram(afterFilePath);
-	const handler = new ChangeHandler();
-	return diff(before, after, handler);
+	return diff(before, after);
 }

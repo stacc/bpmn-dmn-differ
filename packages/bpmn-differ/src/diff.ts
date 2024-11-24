@@ -1,6 +1,6 @@
-import type { ChangeHandler } from "./change-handler";
+import type { ChangeHandler, Results } from "./change-handler";
 import { Differ } from "./differ";
 
-export function diff(a, b, handler?: ChangeHandler) {
-	return new Differ().diff(a, b, handler);
+export function diff(a: any, b: any, handler?: ChangeHandler): Results {
+	return new Differ().diff(a, b, handler).getResults();
 }
