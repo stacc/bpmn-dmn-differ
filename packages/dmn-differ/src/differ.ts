@@ -149,7 +149,7 @@ function findValues(object: BaseElement, key: string) {
 				return true;
 			}
 
-			if (k in object && typeof object[k] === "object") {
+			if (object[k] && typeof object[k] === "object") {
 				value = find(object[k], key);
 				if (value !== undefined) {
 					return true;
