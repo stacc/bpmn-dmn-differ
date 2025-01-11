@@ -1,0 +1,74 @@
+name: DMN/BPMN Diff Issue
+description: Report a missing or incorrect diff case
+title: "[DIFF]: "
+labels: ["diff", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a diff issue! Please provide the DMN/BPMN files that demonstrate the problem.
+
+  - type: dropdown
+    id: file-type
+    attributes:
+      label: File Type
+      description: What type of files are you comparing?
+      options:
+        - DMN
+        - BPMN
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: Please describe what differences you expected to be detected and what was actually detected
+      placeholder: "Example: The tool did not detect the change in decision logic between these two versions..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: before-file
+    attributes:
+      label: Original File (Before)
+      description: Please paste the content of your original DMN/BPMN file
+      render: xml
+    validations:
+      required: true
+
+  - type: textarea
+    id: after-file
+    attributes:
+      label: Modified File (After)
+      description: Please paste the content of your modified DMN/BPMN file
+      render: xml
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-output
+    attributes:
+      label: Current Diff Output
+      description: What diff output did you get from the tool?
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-output
+    attributes:
+      label: Expected Diff Output
+      description: What diff output did you expect to get?
+      render: json
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      description: What version of the package are you using?
+      placeholder: "e.g., 1.0.0"
+    validations:
+      required: true
