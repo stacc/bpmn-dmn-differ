@@ -1,7 +1,9 @@
 name: DMN/BPMN Diff Issue
 description: Report a missing or incorrect diff case
 title: "[DIFF]: "
-labels: ["diff", "needs-triage"]
+labels:
+  - diff
+  - needs-triage
 body:
   - type: markdown
     attributes:
