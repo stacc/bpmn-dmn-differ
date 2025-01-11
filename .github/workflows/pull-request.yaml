@@ -1,0 +1,69 @@
+name: 🧪 Pull request 🧪
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  code-quality:
+    name: Code quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/setup
+      - name: Run Knip
+        run: pnpm run knip
+      - name: Run Linting
+        run: |
+          pnpm run sherif
+          pnpm run format-and-lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/setup
+      - name: Build
+        run: pnpm run build
+
+  analyze-bundle:
+    name: Analyze esbuild bundle size
+    needs: [build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: exoego/esbuild-bundle-analyzer@v1
+        with:
+          metafiles: "out/esbuild.meta.json"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/setup
+      - run: pnpm run test
+
+  release-preview:
+    name: Release preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/setup
+      - run: pnpx pkg-pr-new publish --pnpm --compact './packages/*'
