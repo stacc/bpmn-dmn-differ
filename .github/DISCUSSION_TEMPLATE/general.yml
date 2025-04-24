@@ -1,7 +1,4 @@
-name: 🎨 New Component Request
-description: Request a new component for Prism UI
 title: "[New Component]: "
-type: Feature
 body:
   - type: markdown
     attributes:
